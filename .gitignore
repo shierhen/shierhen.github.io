@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.npm-cache/
+.localappdata/
+src/.vuepress/.cache/
+src/.vuepress/.temp/
+src/.vuepress/dist/

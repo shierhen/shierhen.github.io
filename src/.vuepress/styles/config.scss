@@ -1,0 +1,20 @@
+/* stylelint-disable scss/dollar-variable-pattern */
+/**
+ * 主题的 sass 配置入口（vuepress-theme-hope 通过 sass-palette 读取这个文件）。
+ * 这里只覆盖主色，其余（断点、代码块配色等）沿用主题默认值。
+ *
+ * 主色为什么是蓝：首页背景图以蓝调为主（约 215° 色相占 42%），
+ * 原先的绿色和整张图互相打架。换成同色系的蓝之后，
+ * 导航高亮、链接、图标、卡片强调色都会跟着统一。
+ *
+ * 主题会从这个色值派生出整套 accent：
+ *   亮色 accent = 该色相 35% 明度，暗色 accent = 55% 明度
+ */
+
+/* 主色：偏灰的钢蓝，白天不刺眼、夜里也压得住
+ *
+ * 注意：这里**不能**写 !default。
+ * 主题的 config.scss 模板会先被 import，里面已经用 !default 声明过
+ * $theme-color: #3eaf7c，所以变量此刻「已定义」——再带 !default 的赋值
+ * 会被 sass 直接跳过，主色就还是绿的。直接赋值才能覆盖。 */
+$theme-color: #4c7ea8;

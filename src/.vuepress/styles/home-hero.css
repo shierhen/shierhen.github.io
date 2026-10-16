@@ -1,0 +1,194 @@
+/* ============================================================
+   首页首屏：背景图铺满整个窗口（含导航栏所在的那一条）
+   向下滚动后，导航栏恢复为吸附在顶端的实体样式
+
+   状态类由 src/.vuepress/client.ts 维护：
+     html.shier-hero-route     当前路由是首页
+     html.shier-hero-overlay   仍停留在首屏，导航栏透明覆盖在背景图上
+   ============================================================ */
+
+/* 1. 首页 hero 从窗口最顶端开始、铺满整个窗口 --------------------- */
+html.shier-hero-route .theme-container .vp-page.vp-blog-home {
+  /* 主题默认用 padding-top 给固定导航栏让位，这里取消，
+     让背景图能一直延伸到窗口最顶端（导航栏之下） */
+  padding-top: 0;
+}
+
+html.shier-hero-route .vp-blog-hero.hero-fullscreen {
+  height: 100vh;
+}
+
+@supports (height: 100svh) {
+
+  /* 移动端地址栏可见/收起时 vh 会跳动，svh 取「小视口」高度更稳定 */
+  html.shier-hero-route .vp-blog-hero.hero-fullscreen {
+    height: 100svh;
+  }
+}
+
+/* 背景图上压一层自上而下的暗色渐变，保证白色文字可读 */
+html.shier-hero-route .vp-blog-hero.hero-fullscreen .vp-blog-mask::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 45%;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.45), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 2. 顶部：导航栏透明，浮在背景图上 ------------------------------- */
+html.shier-hero-overlay .vp-navbar {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transition:
+    background-color var(--vp-t-color),
+    box-shadow var(--vp-t-transform);
+}
+
+/* 导航栏文字与图标转白，保证在图片上可读 */
+html.shier-hero-overlay .vp-navbar :is(.vp-site-name,
+  .auto-link,
+  .vp-dropdown-title,
+  .vp-action-link,
+  .vp-appearance-button) {
+  color: #fff;
+}
+
+/* 下拉面板保持实体背景、文字用回主题色，避免白字压在白底上 */
+html.shier-hero-overlay .vp-navbar .vp-dropdown {
+  background: var(--vp-c-bg-elv);
+}
+
+html.shier-hero-overlay .vp-navbar .vp-dropdown a,
+html.shier-hero-overlay .vp-navbar .vp-dropdown .vp-dropdown-subtitle {
+  color: var(--vp-c-text);
+}
+
+/* 下拉箭头的图标改为白色 */
+html.shier-hero-overlay .vp-navbar .vp-dropdown-title .arrow {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(255,255,255,0.7)' d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/%3E%3C/svg%3E");
+}
+
+/* 汉堡按钮、侧边栏按钮的线条转白 */
+html.shier-hero-overlay .vp-navbar :is(.vp-toggle-navbar-button .vp-top,
+  .vp-toggle-navbar-button .vp-middle,
+  .vp-toggle-navbar-button .vp-bottom,
+  .vp-toggle-sidebar-button .icon) {
+  background: #fff;
+}
+
+html.shier-hero-overlay .vp-navbar .vp-toggle-sidebar-button::before,
+html.shier-hero-overlay .vp-navbar .vp-toggle-sidebar-button::after {
+  background: #fff;
+}
+
+/* 搜索框：半透明白色胶囊，文字转白 */
+html.shier-hero-overlay .vp-navbar .search-box input {
+  background-color: rgb(255 255 255 / 0.15);
+  border-color: rgb(255 255 255 / 0.4);
+  color: #fff;
+}
+
+html.shier-hero-overlay .vp-navbar .search-box input::placeholder {
+  color: rgb(255 255 255 / 0.7);
+}
+
+/* 3. 无障碍：头像圆角 */
+html .vp-nav-logo {
+  border-radius: 50%;
+}
+
+html .vp-blog-hero-image {
+  width: 10rem;
+  border-radius: 50%;
+}
+
+html .vp-blogger-avatar {
+  border-radius: 50%;
+}
+
+/* 3. 无障碍：减少动态效果时关闭过渡 */
+@media (prefers-reduced-motion: reduce) {
+  html.shier-hero-overlay .vp-navbar {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   4. 面包屑配色
+   主题只给「当前页」和分隔符定了颜色，前面可点击的层级会继承全局链接色
+   （亮色下是饱和的绿色 --vp-c-accent），在一行小字里显得很跳。
+   这里压回正文色，hover 时才用主题色提示可点击。
+   ============================================================ */
+html .vp-breadcrumb a {
+  color: var(--vp-c-text-mute);
+  transition: color var(--vp-t-color);
+}
+
+html .vp-breadcrumb a:hover {
+  color: var(--vp-c-accent);
+}
+
+/* 当前页最弱，形成「越靠前越淡、当前页最淡」的层次 */
+html .vp-breadcrumb li.is-active a {
+  color: var(--vp-c-text-subtle);
+}
+
+/* 首页的图标跟着文字走，不要单独发绿 */
+html .vp-breadcrumb .vp-icon {
+  color: inherit;
+}
+
+/* ============================================================
+   5. 首页项目卡片（最新文章 / 分类归档 / 标签云 / 时间线）
+   主题按调色板给每张卡分配一种饱和色（暗色下是暗红 / 暗绿 / 暗紫 / 暗绿），
+   几种色相放在一起会和站点主色互相打架。
+   这里统一成「中性底 + 主色图标」：靠层次而不是靠花色来区分。
+
+   注意：主题的宽度是 content-box 下的 calc(33% - 40px)
+   （40px = 左右 margin 16px + 左右 padding 24px），
+   所以这里**不能加 border**，否则每张卡会宽出 2px，一行放不下四张。
+   需要描边就用 box-shadow 的 spread，它不占布局。
+   ============================================================ */
+html .vp-project-card,
+html .vp-project-card[class*="color"] {
+  background: var(--vp-c-bg-alt);
+  /* 用 inset 阴影当描边，不占盒模型宽度 */
+  box-shadow: 0 0 0 1px var(--vp-c-border);
+}
+
+html .vp-project-card:hover,
+html .vp-project-card[class*="color"]:hover {
+  background: var(--vp-c-grey-soft);
+  box-shadow: 0 0 0 1px var(--vp-c-accent);
+}
+
+/* 图标是唯一的颜色点缀，统一用主色 */
+html .vp-project-card .vp-project-icon {
+  color: var(--vp-c-accent);
+}
+
+/* 标题与描述显式定色，避免继承到不匹配的组合 */
+html .vp-project-card .vp-project-name {
+  color: var(--vp-c-text);
+  font-weight: 600;
+}
+
+html .vp-project-card .vp-project-desc {
+  color: var(--vp-c-text-mute);
+}
+
+/* 暗色下 --vp-c-bg-alt 比页面背景还暗，改用略亮的层级背景 */
+html[data-theme="dark"] .vp-project-card,
+html[data-theme="dark"] .vp-project-card[class*="color"] {
+  background: var(--vp-c-bg-elv);
+  box-shadow: 0 0 0 1px var(--vp-c-border);
+}
+
+html[data-theme="dark"] .vp-project-card:hover,
+html[data-theme="dark"] .vp-project-card[class*="color"]:hover {
+  background: var(--vp-c-grey-bg);
+  box-shadow: 0 0 0 1px var(--vp-c-accent);
+}
