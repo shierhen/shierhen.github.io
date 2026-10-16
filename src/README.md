@@ -5,7 +5,7 @@ icon: house
 title: 首页
 heroImage: /avatar.jpg
 # 首屏背景图：铺满整个窗口（导航栏浮在图上），向下滚动后导航栏吸附回顶端
-bgImage: /bgImage.png
+bgImage: /bgImage.webp
 heroText: 十二的小站
 tagline: 希望能成为一个有趣的人
 heroFullScreen: true

@@ -36,7 +36,7 @@ dir:
 
 ## 界面预览
 
-![界面截图](/aipreview.png)
+![界面预览](/aipreview.webp)
 
 
 ## 踩坑记录（真实故障 + 根因）
